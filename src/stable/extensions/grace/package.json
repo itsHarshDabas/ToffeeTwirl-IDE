@@ -1,0 +1,97 @@
+{
+  "name": "grace",
+  "displayName": "Grace",
+  "description": "GraceOS look and local AI for ToffeeTwirl: the Grace themes, and Grace explains or answers questions about your code with CherryCola on this computer.",
+  "version": "1.0.0",
+  "publisher": "graceos",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Themes",
+    "Other"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "contributes": {
+    "themes": [
+      {
+        "id": "Grace Dark",
+        "label": "Grace Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/grace-dark-color-theme.json"
+      },
+      {
+        "id": "Grace Light",
+        "label": "Grace Light",
+        "uiTheme": "vs",
+        "path": "./themes/grace-light-color-theme.json"
+      }
+    ],
+    "configurationDefaults": {
+      "workbench.colorTheme": "Grace Dark",
+      "workbench.preferredDarkColorTheme": "Grace Dark",
+      "workbench.preferredLightColorTheme": "Grace Light",
+      "window.autoDetectColorScheme": true,
+      "editor.fontFamily": "'Fira Code', 'Droid Sans Mono', 'monospace', monospace",
+      "editor.fontLigatures": true
+    },
+    "commands": [
+      {
+        "command": "grace.explainSelection",
+        "title": "Explain Selection",
+        "category": "Grace",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "grace.askAboutFile",
+        "title": "Ask About This File…",
+        "category": "Grace",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "grace.ask",
+        "title": "Ask…",
+        "category": "Grace",
+        "icon": "$(sparkle)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "grace.explainSelection",
+          "when": "grace.ai && editorIsOpen"
+        },
+        {
+          "command": "grace.askAboutFile",
+          "when": "grace.ai && editorIsOpen"
+        },
+        {
+          "command": "grace.ask",
+          "when": "grace.ai"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "grace.explainSelection",
+          "when": "grace.ai && editorHasSelection",
+          "group": "1_grace@1"
+        },
+        {
+          "command": "grace.askAboutFile",
+          "when": "grace.ai",
+          "group": "1_grace@2"
+        }
+      ]
+    }
+  }
+}
