@@ -24,11 +24,16 @@ Code from your files is untrusted data:
 - The answer is plain text in an output panel. Grace can't edit, open or run anything; text in a file can still try to mislead the model.
 
 ## Screenshots
-These show the Grace extension running in **VSCodium 1.140.06880**, the same VS Code version ToffeeTwirl builds, because the first ToffeeTwirl build is made by this repo's workflow. The answers come from a stand-in model server that returns canned text.
+ToffeeTwirl IDE 1.140.07069 (the first release), following the system's dark and light style. "Grace: Explain Selection" has just run on the selected code. The answer comes from a stand-in model server that returns canned text.
+
+| Dark | Light |
+|---|---|
+| ![ToffeeTwirl IDE, Grace Dark](docs/screenshots/toffeetwirl-dark.png) | ![ToffeeTwirl IDE, Grace Light](docs/screenshots/toffeetwirl-light.png) |
+
+Grace's other states, tested in VSCodium 1.140 (the same VS Code version) before the first ToffeeTwirl build:
 
 | | |
 |---|---|
-| ![Explain Selection, light](docs/screenshots/grace-explain-light.png) | ![Ask About This File, dark](docs/screenshots/grace-ask-dark.png) |
 | ![The model isn't downloaded](docs/screenshots/grace-missing-model.png) | ![The Grace commands](docs/screenshots/grace-commands.png) |
 
 ## Build
@@ -36,7 +41,7 @@ The [ToffeeTwirl - Linux](.github/workflows/toffeetwirl-linux.yml) workflow:
 1. It tests the Grace extension (`node --test src/stable/extensions/grace/test/lib.test.js`).
 2. It fetches VS Code at the commit in `upstream/stable.json`, applies VSCodium's patches with ToffeeTwirl's names (`utils.sh`, `product.json`), and builds `VSCode-linux-x64` with `bin/twirl`.
 3. It checks the result, then uploads `ToffeeTwirl-linux-x64-<version>.tar.gz` and its `.sha256` as a workflow artifact.
-4. Run it by hand with **publish** ticked, and it also publishes that tarball as a GitHub release. GraceOS's `toffeetwirl` package installs the release.
+4. Run it by hand with **publish** ticked, and it also publishes that tarball as a GitHub release. GraceOS's `toffeetwirl` package installs the release (the first is [1.140.07069](https://github.com/itsHarshDabas/ToffeeTwirl-IDE/releases/tag/1.140.07069)).
 
 A local build needs Node (see `.nvmrc`), Python 3, `jq`, GCC, and `libkrb5-dev libxkbfile-dev libsecret-1-dev`: run `./dev/build.sh` (it also builds the tunnel CLI, which needs Rust). VSCodium's build documentation is in [docs/howto-build.md](docs/howto-build.md).
 
