@@ -1,8 +1,8 @@
 {
   "name": "grace",
   "displayName": "Grace",
-  "description": "GraceOS look and local AI for ToffeeTwirl: the Grace themes, and Grace explains or answers questions about your code with CherryCola on this computer.",
-  "version": "1.0.0",
+  "description": "GraceOS look and local AI for ToffeeTwirl: the Grace themes, Grace Agents that plan and build in your project, and Grace explaining code, all with CherryCola on this computer.",
+  "version": "1.1.0",
   "publisher": "graceos",
   "license": "MIT",
   "engines": {
@@ -19,7 +19,8 @@
   "capabilities": {
     "virtualWorkspaces": true,
     "untrustedWorkspaces": {
-      "supported": true
+      "supported": "limited",
+      "description": "Grace Agents can change files and run commands, so they only work in trusted folders. Explain and Ask work everywhere."
     }
   },
   "contributes": {
@@ -43,7 +44,9 @@
       "workbench.preferredLightColorTheme": "Grace Light",
       "window.autoDetectColorScheme": true,
       "editor.fontFamily": "'Fira Code', 'Droid Sans Mono', 'monospace', monospace",
-      "editor.fontLigatures": true
+      "editor.fontLigatures": true,
+      "workbench.startupEditor": "none",
+      "workbench.secondarySideBar.defaultVisibility": "hidden"
     },
     "commands": [
       {
@@ -63,6 +66,37 @@
         "title": "Ask…",
         "category": "Grace",
         "icon": "$(sparkle)"
+      },
+      {
+        "command": "grace.agent.open",
+        "title": "Open Agent Home",
+        "category": "Grace Agents",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "grace.agent.plan",
+        "title": "Plan a Task…",
+        "category": "Grace Agents"
+      },
+      {
+        "command": "grace.agent.build",
+        "title": "Build a Task…",
+        "category": "Grace Agents"
+      },
+      {
+        "command": "grace.agent.auto",
+        "title": "Run a Task in Auto Mode (Headless)…",
+        "category": "Grace Agents"
+      },
+      {
+        "command": "grace.agent.chooseModel",
+        "title": "Choose the Model…",
+        "category": "Grace Agents"
+      },
+      {
+        "command": "grace.agent.stopAll",
+        "title": "Stop All Tasks",
+        "category": "Grace Agents"
       }
     ],
     "menus": {
@@ -78,6 +112,30 @@
         {
           "command": "grace.ask",
           "when": "grace.ai"
+        },
+        {
+          "command": "grace.agent.open",
+          "when": "grace.ai"
+        },
+        {
+          "command": "grace.agent.plan",
+          "when": "grace.ai"
+        },
+        {
+          "command": "grace.agent.build",
+          "when": "grace.ai"
+        },
+        {
+          "command": "grace.agent.auto",
+          "when": "grace.ai"
+        },
+        {
+          "command": "grace.agent.chooseModel",
+          "when": "grace.ai"
+        },
+        {
+          "command": "grace.agent.stopAll",
+          "when": "grace.ai"
         }
       ],
       "editor/context": [
@@ -91,7 +149,140 @@
           "when": "grace.ai",
           "group": "1_grace@2"
         }
+      ],
+      "view/title": [
+        {
+          "command": "grace.agent.open",
+          "when": "view == grace.agents",
+          "group": "navigation"
+        }
       ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "grace-agents",
+          "title": "Grace Agents",
+          "icon": "media/grace-agents.svg"
+        }
+      ]
+    },
+    "views": {
+      "grace-agents": [
+        {
+          "type": "webview",
+          "id": "grace.agents",
+          "name": "Tasks",
+          "when": "grace.ai"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "grace.agent.open",
+        "key": "ctrl+alt+g",
+        "when": "grace.ai"
+      }
+    ],
+    "configuration": {
+      "title": "Grace Agents",
+      "properties": {
+        "grace.agent.defaultMode": {
+          "type": "string",
+          "enum": [
+            "plan",
+            "build",
+            "auto"
+          ],
+          "enumDescriptions": [
+            "Look around and write a plan; nothing changes until you approve it.",
+            "Plan and build; you review each folder, edit and command.",
+            "Plan and build on its own (headless); every change can be undone afterwards."
+          ],
+          "default": "build",
+          "description": "The mode a new task starts in."
+        },
+        "grace.agent.model": {
+          "type": "string",
+          "default": "",
+          "description": "The CherryCola model Grace Agents use, such as qwen2.5-coder:7b. Empty follows CherryCola's current model (cherrycola use)."
+        },
+        "grace.agent.preset": {
+          "type": "string",
+          "enum": [
+            "code",
+            "precise",
+            "balanced",
+            "creative"
+          ],
+          "default": "code",
+          "description": "CherryCola's sampling preset for agent turns. Code keeps answers focused and repeatable."
+        },
+        "grace.agent.contextLength": {
+          "type": "number",
+          "default": 16384,
+          "minimum": 2048,
+          "maximum": 262144,
+          "description": "Context length in tokens for agent turns (CherryCola's context_length). Bigger lets Grace keep more of the project in mind and uses more memory."
+        },
+        "grace.agent.maxTurns": {
+          "type": "number",
+          "default": 30,
+          "minimum": 1,
+          "maximum": 500,
+          "description": "Grace stops a task after this many model turns. A message keeps it going."
+        },
+        "grace.agent.allowCommands": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether tasks started from the command palette may run commands.",
+          "scope": "application"
+        },
+        "grace.agent.autoCommands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "npm test",
+            "npm run *",
+            "npm install",
+            "pnpm test",
+            "yarn test",
+            "pytest*",
+            "python -m pytest*",
+            "cargo build*",
+            "cargo test*",
+            "cargo check*",
+            "go build*",
+            "go test*",
+            "make",
+            "make test",
+            "ls*",
+            "git status",
+            "git diff*"
+          ],
+          "markdownDescription": "Commands Auto mode runs without asking (`*` matches anything). Commands with `;`, `&`, `|`, `$`, backticks or redirects never match. Others are skipped and listed at the end, with a button to run them yourself.",
+          "scope": "application"
+        },
+        "grace.agent.autoRunAnyCommand": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Let Auto mode run **any** command the model writes. Off by default: the model chooses the commands, and text in your files can mislead it. Only your user settings can turn this on, never a project's `.vscode/settings.json`.",
+          "scope": "application"
+        },
+        "grace.agent.commandTimeoutSeconds": {
+          "type": "number",
+          "default": 120,
+          "minimum": 5,
+          "description": "A command Grace runs is stopped after this many seconds."
+        },
+        "grace.agent.openHomeOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the Agent Home when ToffeeTwirl starts with no files open."
+        }
+      }
     }
   }
 }

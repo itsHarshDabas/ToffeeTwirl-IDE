@@ -45,7 +45,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Test the Grace extension
-        run: node --test src/stable/extensions/grace/test/lib.test.js
+        run: node --test src/stable/extensions/grace/test/*.test.js
 
   build:
     needs: grace-extension

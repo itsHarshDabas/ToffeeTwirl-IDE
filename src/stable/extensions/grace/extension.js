@@ -8,6 +8,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const lib = require('./lib');
+const { registerAgents } = require('./agent/ide');
 
 const COMMAND = 'cherrycola';
 
@@ -29,15 +30,20 @@ function activate(context) {
   const status = vscode.window.createStatusBarItem('grace.status', vscode.StatusBarAlignment.Right, 100);
   status.name = 'Grace';
   status.text = '$(sparkle) Grace';
-  status.tooltip = 'Ask Grace: the local AI on this computer (CherryCola)';
-  status.command = 'grace.ask';
+  status.tooltip = 'Grace Agents: plan and build with the local AI on this computer (CherryCola)';
+  status.command = 'grace.agent.open';
   context.subscriptions.push(output, status);
 
   let aiOn = true;
   let running = null; // the cherrycola child process while one runs
+  const aiListeners = [];
 
   function refreshAi() {
+    const was = aiOn;
     aiOn = lib.aiEnabled(readText(path.join(configDir(), 'desktop.conf')));
+    if (was !== aiOn) {
+      aiListeners.forEach(fn => fn());
+    }
     vscode.commands.executeCommand('setContext', 'grace.ai', aiOn);
     if (aiOn) {
       status.show();
@@ -184,6 +190,14 @@ function activate(context) {
     }),
     { dispose: () => running && running.kill() },
   );
+
+  registerAgents(context, {
+    aiOn: () => aiOn,
+    onAiChange: fn => aiListeners.push(fn),
+    configDir,
+    readText,
+    status,
+  });
 }
 
 function deactivate() { }

@@ -1,5 +1,5 @@
 'use strict';
-// node --test src/stable/extensions/grace/test/lib.test.js
+// node --test src/stable/extensions/grace/test/*.test.js
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const lib = require('../lib');
