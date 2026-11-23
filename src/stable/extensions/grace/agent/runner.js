@@ -693,10 +693,8 @@ class Runner {
     }));
   }
 
-  /**
-   * Undo every change the task made, newest first. A file someone changed since is left alone.
-   * Returns { undone, kept: [paths] }.
-   */
+  // Undo every change the task made, newest first. A file someone changed since is left alone.
+  // Returns { undone, kept: [paths] }.
   undo(task) {
     const workspace = new Workspace(task.root);
     let undone = 0;

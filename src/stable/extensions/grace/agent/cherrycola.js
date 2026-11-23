@@ -35,11 +35,9 @@ function run(args, { input, signal, timeout = 20000 } = {}) {
   });
 }
 
-/**
- * Stream one agent turn: `cherrycola ask -` with the prompt on stdin, Grace's system prompt,
- * the chosen model and preset, and a context length that fits the transcript.
- * Resolves { code, text, stderr, stopped }.
- */
+// Stream one agent turn: `cherrycola ask -` with the prompt on stdin, Grace's system prompt,
+// the chosen model and preset, and a context length that fits the transcript.
+// Resolves { code, text, stderr, stopped }.
 function ask(prompt, { model = '', preset = 'code', contextLength = 0, signal, onChunk } = {}) {
   const args = ['ask', '-'];
   if (model) {

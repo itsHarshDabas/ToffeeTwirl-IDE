@@ -26,10 +26,8 @@ function nonce() {
   return crypto.randomBytes(16).toString('base64').replace(/[^A-Za-z0-9]/g, '');
 }
 
-/**
- * @param {vscode.ExtensionContext} context
- * @param {{ aiOn: () => boolean, onAiChange: (fn: () => void) => void, configDir: () => string, readText: (f: string) => string, status: vscode.StatusBarItem }} grace
- */
+// @param {vscode.ExtensionContext} context
+// @param {{ aiOn: () => boolean, onAiChange: (fn: () => void) => void, configDir: () => string, readText: (f: string) => string, status: vscode.StatusBarItem }} grace
 function registerAgents(context, grace) {
   const clients = new Set();     // { webview, layout, selected }
   let home = null;               // the Agent Home WebviewPanel

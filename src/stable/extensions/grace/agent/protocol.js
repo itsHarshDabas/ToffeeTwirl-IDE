@@ -50,9 +50,7 @@ function toolDocs(permissions) {
   return lines.join('\n');
 }
 
-/**
- * The rules at the top of every turn. phase: 'plan' (look and plan only) or 'build'.
- */
+// The rules at the top of every turn. phase: 'plan' (look and plan only) or 'build'.
 function rules({ phase, permissions, projectName }) {
   const out = [
     `You are Grace, the coding agent inside ToffeeTwirl IDE on GraceOS. You work on the project "${oneLine(projectName, 80)}" by writing tags. Each tag is one action; Grace runs them in order and shows you the results next turn.`,
@@ -102,10 +100,8 @@ function clipMiddle(text, limit) {
   return `${text.slice(0, head)}\n… (${(text.length - limit).toLocaleString('en')} characters left out) …\n${text.slice(-tail)}`;
 }
 
-/**
- * The whole prompt for one turn: rules, the task, the plan so far, and the history (old steps are
- * shortened first so the newest results always fit in `budget` characters).
- */
+// The whole prompt for one turn: rules, the task, the plan so far, and the history (old steps are
+// shortened first so the newest results always fit in `budget` characters).
 function buildTurn({ phase, permissions, projectName, goal, context = '', plan = [], history = [], budget = 24000, note = '' }) {
   const head = [rules({ phase, permissions, projectName }), '', 'TASK:', String(goal || '').trim()];
   if (context) {
@@ -174,10 +170,8 @@ function blockText(text) {
   return body;
 }
 
-/**
- * Turn a model reply into { thought, actions }. Unknown tags are ignored; a block whose closing
- * tag is missing (the reply was cut off) is dropped, except <done>, <plan> and <run>.
- */
+// Turn a model reply into { thought, actions }. Unknown tags are ignored; a block whose closing
+// tag is missing (the reply was cut off) is dropped, except <done>, <plan> and <run>.
 function parseReply(reply) {
   reply = String(reply || '').replace(/<think>[\s\S]*?<\/think>/g, '');
   const actions = [];
@@ -237,10 +231,8 @@ function parseReply(reply) {
   return { thought: thought.join('').replace(/\n{3,}/g, '\n\n').trim(), actions };
 }
 
-/**
- * A project-relative path that stays inside the project, or an error message.
- * Rejects absolute paths, "..", the .git folder, and NUL bytes; symlinks are checked by the host.
- */
+// A project-relative path that stays inside the project, or an error message.
+// Rejects absolute paths, "..", the .git folder, and NUL bytes; symlinks are checked by the host.
 function safeRelative(path) {
   const raw = String(path || '').trim().replace(/\\/g, '/');
   if (!raw) {
@@ -327,10 +319,8 @@ function lineStats(before, after) {
   return { added: b.length - same, removed: a.length - same };
 }
 
-/**
- * A line diff for review: [{ type: ' ' | '+' | '-' | '…', text }], with `context` unchanged lines
- * around each change. Big files fall back to "everything removed, everything added".
- */
+// A line diff for review: [{ type: ' ' | '+' | '-' | '…', text }], with `context` unchanged lines
+// around each change. Big files fall back to "everything removed, everything added".
 function diffLines(before, after, { context = 2, limit = 600 } = {}) {
   const split = text => (text ? text.replace(/\n$/, '').split('\n') : []);
   const a = split(before);
