@@ -101,17 +101,22 @@ function modelServerHost(cherrycolaConf, backend) {
 
 /** Why a cherrycola run failed, for a message. exitCode null: it didn't start (not installed). */
 function failure(exitCode, stderr) {
-  const lines = (stderr || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-  let detail = lines.length ? lines[lines.length - 1].replace(/^CherryCola:\s*/, '') : '';
+  // Skip "(loading …)" status lines; errors start "CherryColaLLM:" since the rename ("CherryCola:" before).
+  const lines = (stderr || '').split(/\r?\n/).map(line => line.trim()).filter(line => line && !/^\(.*\)$/.test(line));
+  let detail = lines.length ? lines[lines.length - 1].replace(/^CherryCola(?:LLM)?:\s*/i, '') : '';
   detail = detail.charAt(0).toUpperCase() + detail.slice(1);
   if (exitCode === null || exitCode === 127) {
-    return { kind: 'not-installed', message: "CherryCola isn't installed. Install the cherrycola package and Ollama to use Grace." };
+    return { kind: 'not-installed', message: "CherryCola isn't installed. Install the cherrycolallm package and Ollama to use Grace." };
   }
   if (exitCode === 3) {
-    return { kind: 'model-missing', message: detail.replace(/\.?\s*Run: cherrycola pull\S*$/, '.') || "The model isn't downloaded yet." };
+    // Only Ollama models come from `cherrycola pull`; llama.cpp and LM Studio say how to get theirs.
+    if (!/\bpull\b/.test(detail)) {
+      return { kind: 'model-setup', message: detail || "The model isn't set up yet." };
+    }
+    return { kind: 'model-missing', message: detail.replace(/\.?\s*Run: cherrycola(?:llm)? pull\S*$/, '.') || "The model isn't downloaded yet." };
   }
   if (exitCode === 2) {
-    return { kind: 'unreachable', message: "Can't reach the local model server (Ollama or LM Studio). " + (detail || 'Is it running?') };
+    return { kind: 'unreachable', message: "Can't reach the local model server (Ollama, LM Studio or llama.cpp). " + (detail || 'Is it running?') };
   }
   return { kind: 'error', message: detail || `CherryCola stopped with exit code ${exitCode}.` };
 }

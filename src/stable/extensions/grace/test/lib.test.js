@@ -66,4 +66,10 @@ test('failures become messages', () => {
   assert.ok(lib.failure(2, 'CherryCola: no server').message.startsWith("Can't reach the local model server"));
   assert.equal(lib.failure(1, 'starting\nCherryCola: ask needs a question\n').message, 'Ask needs a question');
   assert.equal(lib.failure(1, '').message, 'CherryCola stopped with exit code 1.');
+  // CherryColaLLM (after the rename) prefixes its errors with its new name and prints status lines first.
+  const renamed = lib.failure(3, "(loading)\nCherryColaLLM: the model qwen3:4b isn't downloaded yet. Run: cherrycolallm pull");
+  assert.deepEqual(renamed, { kind: 'model-missing', message: "The model qwen3:4b isn't downloaded yet." });
+  const gguf = lib.failure(3, 'CherryColaLLM: no GGUF model named qwen. Get one with: cherrycolallm get OWNER/REPO:Q4_K_M');
+  assert.equal(gguf.kind, 'model-setup');
+  assert.ok(gguf.message.startsWith('No GGUF model named qwen.'));
 });

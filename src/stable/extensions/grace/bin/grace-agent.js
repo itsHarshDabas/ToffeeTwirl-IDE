@@ -150,7 +150,7 @@ async function main() {
     ask: (prompt, opts) => cherrycola.ask(prompt, { ...opts, model: options.model, preset: options.preset }),
     failure: (code, stderr) => {
       const failure = lib.failure(code, stderr);
-      exitCode = { 'model-missing': 3, unreachable: 2, 'not-installed': 2 }[failure.kind] || 4;
+      exitCode = { 'model-missing': 3, 'model-setup': 3, unreachable: 2, 'not-installed': 2 }[failure.kind] || 4;
       return failure.message + (failure.kind === 'model-missing' ? ' Run: cherrycola pull' : '');
     },
     // Print each step once it has settled (a live thought or a running command isn't final yet).
