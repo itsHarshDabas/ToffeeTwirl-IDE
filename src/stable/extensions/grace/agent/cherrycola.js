@@ -101,7 +101,7 @@ async function status() {
 
 function lastLine(text) {
   const lines = String(text || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-  return lines.length ? lines[lines.length - 1].replace(/^CherryCola:\s*/, '') : '';
+  return lines.length ? lines[lines.length - 1].replace(/^CherryCola(?:LLM)?:\s*/i, '') : '';
 }
 
 /** Model names CherryCola accepts on its command line (no options smuggled in). */
